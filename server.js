@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 
 const cors = require('cors')
 
+
 const bcrypt = require('bcrypt')
 require ('dotenv').config();
 
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 3003;
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
+app.use(cors())
 
 app.get("/", (req, res) => {
       res.json({ message: "Welcome to my application." });
@@ -23,7 +25,8 @@ app.post('/signup', async (req,res) =>{
             const { name, email, password, role  } = req.body
             const hashedPass = await bcrypt.hash(password, 10)
             const newUser = await pool.query(`INSERT INTO users (name, email, password, role) VALUES ($1,$2,$3,$4) RETURNING *`, [name, email, hashedPass, role])
-            res.json(newUser)
+            const accessToken = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET )
+            res.json({ name, email, role, accessToken: accessToken})
       } catch (error) {
             res.status(500)
             .send('Catched Error: ' + error)      
@@ -39,8 +42,7 @@ app.post('/login', async (req,res) =>{
       try {
             if(await bcrypt.compare(password, userQuery.rows[0].password)){
                   const {email, name, role } = userQuery.rows[0]
-                  const user = { email }
-                  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET )
+                  const accessToken = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET )
                   res.json({ name, email, role, accessToken: accessToken})
             }else{
                   res.send('Not Allowed')
@@ -88,4 +90,4 @@ app.delete('/users/:id', async (req,res) =>{
 
 
 
-app.listen(3000, () => console.log('Server started at port:' + 3000))
+app.listen(PORT, () => console.log('Server started at port:' + PORT))
