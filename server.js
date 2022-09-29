@@ -11,12 +11,14 @@ require ('dotenv').config();
 
 const PORT = process.env.PORT || 3003;
 
+const URI = process.env.URI
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 
 app.get("/", (req, res) => {
-      res.json({ message: "Welcome to my application." });
+      res.send("Welcome to my application.");
     });
 
 // Create 
