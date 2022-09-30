@@ -1,17 +1,15 @@
+
 const express = require('express')
 const app = express()
 const pool = require('./db')
 const jwt = require('jsonwebtoken')
-
 const cors = require('cors')
 
 
 const bcrypt = require('bcrypt')
 require ('dotenv').config();
 
-const PORT = process.env.PORT || 3003;
-
-const URI = process.env.URI
+const PORT = process.env.PORT || 5000;
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
